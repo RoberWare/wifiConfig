@@ -20,7 +20,7 @@
 | **Languages**           | English                                 |
 
 #### Instalation
-       pip3 install --user wifiConf
+       sudo pip3 install wifiConfig
   
 #### Usage 
  - Terminal
