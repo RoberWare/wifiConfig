@@ -22,7 +22,7 @@ s = setup(
     'Programming Language :: Python :: 3.6',
     ],
     name='wifiConfig',
-    version='0.1.1',
+    version='0.1.2',
     description='Flask app for an easy wifi configuration',
     long_description=long_description,
     keywords = ['wifi', 'configuration', 'hostpot', 'flask'],
