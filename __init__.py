@@ -1,7 +1,7 @@
 """
 *******************************
 *                             *
-*         wifi_conf           *
+*         wifiConf           *
 *                             * 
 *******************************
 
@@ -19,9 +19,9 @@ Developer
 
 
 #***MODULES***
-import sys,os,time
+import sys,os,time,argparse
 from threading import Thread
-from multiprocessing import Process, Lock, Value
+from multiprocessing import Process, Value
 import urllib.request as urllib2
 from flask import Flask, request, redirect, url_for, g
 from PyAccessPoint import pyaccesspoint
@@ -115,12 +115,8 @@ class WifiConf():
         with app.test_request_context():
             request = req
             time.sleep(1)
-            #self.server.terminate()
-            #self.server.join() 
-            #os.kill(self.server.recv(), signal.SIGTERM)
             self.access_point.stop()
             os.system("sudo pyaccesspoint stop")   
-            #print(server_name,pw)
             myFinder=Finder(server_name=server_name,
                             password=pw,
                             interface=self.wlan) 
@@ -140,7 +136,6 @@ class WifiConf():
             app.run(host=self.host, port=self.port)
         
         except Exception as e:
-            #os.system("sudo ifdown wlan0")
             print(e)
             sys.exit()
 
@@ -227,11 +222,6 @@ def connect_page():
     global thr_connect
     thr_connect = Thread(target=myWifiConf.connect, args=[request, server_name, pw])
     thr_connect.start()
-    
-    #@after_this_request
-    #def func(response):
-    #    myWifiConf.connect(request, server_name, pw)
-    
     return "connecting..."
     
 @app.route('/shutdown', methods=['POST'])
@@ -240,7 +230,31 @@ def shutdown():
     fin()
     return 'Shutdown...'
 
+
+def main():
+    parser = argparse.ArgumentParser(description='A utility create a wifi hotspot on linux',
+                                     formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+    parser.add_argument('command', choices=['start'])
+    parser.add_argument('-w', "--wlan", required=False, default='wlan0',
+                        help='wi-fi interface that will be used to create hotspot')
+    parser.add_argument('-i', "--inet", required=False, default=None, help='forwarding interface')
+    parser.add_argument('-ip', required=False, default='192.168.0.1', help='ip address of this machine in new '
+                                                                            'network')
+    parser.add_argument('-n', "--netmask", required=False, default='255.255.255.0',
+                        help='no idea what to put here as help, if don\'t know what is it don\'t change this parameter')
+    parser.add_argument('-s', "--ssid", required=False, default='MyAccessPoint', help='name of new hotspot')
+    parser.add_argument('-p', "--password", required=False, default='1234567890',
+                        help='password that can be used to connect to created hotspot')
+
+    parser.add_argument('-h', "--host", required=False, default='0.0.0.0', help='name of new hotspot')
+    parser.add_argument('-po', "--port", required=False, default='8080',
+                        help='password that can be used to connect to created hotspot')
+
+    args = parser.parse_args()
+    
+    if args.command == 'start':
+        myWifiConfApp = WifiConfApp()
+        myWifiConfApp.start()
+
 if __name__ == "__main__":
-#    if check_con():
-    myWifiConfApp = WifiConfApp()
-    myWifiConfApp.start()
+    sys.exit(main())
