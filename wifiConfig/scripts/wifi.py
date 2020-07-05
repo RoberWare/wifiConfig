@@ -42,7 +42,7 @@ class Finder:
         self.interface = interface
         self.country=country
         self.main_dict = {}
-        print(self.server_name,self.password)
+        #print(self.server_name,self.password)
     def find(self):
         iwlist_scan = subprocess.check_output(['/sbin/iwlist', self.interface, 'scan']).decode('utf-8')
 
@@ -61,7 +61,7 @@ class Finder:
         command = """/sbin/iwlist %s scan | grep -ioE 'ssid:"(.*{}.*)'"""%(self.interface)
         result = os.popen(command.format(self.server_name))
         result = list(result)
-        print(result)
+        #print(result)
         if "Device or resource busy" in result:
                 return None
         else:
