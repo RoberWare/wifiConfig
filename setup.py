@@ -4,12 +4,15 @@ import os
 if os.path.exists('README.md'):
     with open('README.md') as readme_rst_file:
         long_description = readme_rst_file.read()
+
 else:
     long_description = 'No description'
 
+
 s = setup(
     install_requires=[
-        'flask'
+        'flask',
+        'PyAccessPoint'
     ],
     classifiers=[
     'Development Status :: 3 - Alpha',      # Chose either "3 - Alpha", "4 - Beta" or "5 - Production/Stable" as the current state of your package
@@ -22,9 +25,10 @@ s = setup(
     'Programming Language :: Python :: 3.6',
     ],
     name='wifiConfig',
-    version='0.1.2',
+    version='0.1.4',
     description='Flask app for an easy wifi configuration',
     long_description=long_description,
+    long_description_content_type='text/markdown',
     keywords = ['wifi', 'configuration', 'hostpot', 'flask'],
     license='MIT',
     author='Roberto Lama Rodriguez',
