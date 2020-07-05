@@ -25,7 +25,7 @@ s = setup(
     'Programming Language :: Python :: 3.6',
     ],
     name='wifiConfig',
-    version='0.1.4',
+    version='0.1.8',
     description='Flask app for an easy wifi configuration',
     long_description=long_description,
     long_description_content_type='text/markdown',
@@ -37,7 +37,7 @@ s = setup(
     packages=['wifiConfig'],
     entry_points={
         'console_scripts': [
-            'wifiConfig = wifiConfig.__init__:main',
+            'wifiConfig = wifiConfig.__main__:main',
         ],
     }
 )
