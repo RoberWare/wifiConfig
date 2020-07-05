@@ -1,4 +1,4 @@
-from setuptools import setup
+from setuptools import setup, find_packages
 import os
 
 if os.path.exists('README.md'):
@@ -25,7 +25,7 @@ s = setup(
     'Programming Language :: Python :: 3.6',
     ],
     name='wifiConfig',
-    version='0.1.8',
+    version='0.1.9',
     description='Flask app for an easy wifi configuration',
     long_description=long_description,
     long_description_content_type='text/markdown',
@@ -34,7 +34,7 @@ s = setup(
     author='Roberto Lama Rodriguez',
     author_email='roberlama@gmail.com',
     url='https://github.com/RoberWare/wifiConfig',
-    packages=['wifiConfig'],
+    packages=find_packages(),
     entry_points={
         'console_scripts': [
             'wifiConfig = wifiConfig.__main__:main',
