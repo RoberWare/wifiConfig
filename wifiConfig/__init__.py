@@ -28,7 +28,7 @@ from PyAccessPoint import pyaccesspoint
 if __name__ == "__main__":
     from scripts.wifi import Finder, Cell
 else:
-    from wifiConf.scripts.wifi import Finder, Cell
+    from wifiConfig.scripts.wifi import Finder, Cell
 
 #***GLOBAL VARS***
 wlan='wlan0'
