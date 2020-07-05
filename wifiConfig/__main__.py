@@ -123,7 +123,7 @@ class WifiConf():
                             interface=self.wlan) 
             myFinder.connection()
             self.connected.value=1
-            print("connected!")
+            #print("connected!")
         print("ok")
 
     def reset_ap(self):
@@ -133,7 +133,7 @@ class WifiConf():
 
     def start(self):
         try:
-            print("running? "+str(self.access_point.is_running()))
+            #print("running? "+str(self.access_point.is_running()))
             app.run(host=self.host, port=self.port)
         
         except Exception as e:
@@ -247,7 +247,7 @@ def main():
     parser.add_argument('-p', "--password", required=False, default='1234567890',
                         help='password that can be used to connect to created hotspot')
 
-    parser.add_argument('-h', "--host", required=False, default='0.0.0.0', help='name of new hotspot')
+    parser.add_argument('-ho', "--host", required=False, default='0.0.0.0', help='name of new hotspot')
     parser.add_argument('-po', "--port", required=False, default='8080',
                         help='password that can be used to connect to created hotspot')
 
