@@ -20,8 +20,10 @@
 | **Languages**           | English                                 |
 
 #### Instalation
-       sudo pip3 install wifiConfig
-  
+```Shell
+sudo pip3 install wifiConfig
+```
+
 #### Usage 
  - Terminal
 ```Shell
