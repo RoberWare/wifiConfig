@@ -25,12 +25,44 @@ sudo pip3 install wifiConfig
 ```
 
 #### Usage 
- - Terminal
+ - Terminal 
 ```Shell
 sudo wifiConfig start
 ```
- Not many options avaiable via command line at the moment,
- for more personalitation use the python module.
+You need to run it with permissions to modify the file /etc/wpa_supplicant/wpa_supplicant.conf
+
+```Shell
+usage: wifiConfig [-h] [-w WLAN] [-i INET] [-ip IP] [-n NETMASK] [-s SSID]
+                  [-p PASSWORD] [-ho HOST] [-po PORT]
+                  {start}
+
+A utility create a wifi hotspot on linux
+
+positional arguments:
+  {start}
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -w WLAN, --wlan WLAN  wi-fi interface that will be used to create hotspot
+                        (default: wlan0)
+  -i INET, --inet INET  forwarding interface (default: None)
+  -ip IP                ip address of this machine in new network (default:
+                        192.168.0.1)
+  -n NETMASK, --netmask NETMASK
+                        no idea what to put here as help, if don't know what
+                        is it don't change this parameter (default:
+                        255.255.255.0)
+  -s SSID, --ssid SSID  name of new hotspot (default: MyAccessPoint)
+  -p PASSWORD, --password PASSWORD
+                        password that can be used to connect to created
+                        hotspot (default: 1234567890)
+  -ho HOST, --host HOST
+                        name of new hotspot (default: 0.0.0.0)
+  -po PORT, --port PORT
+                        password that can be used to connect to created
+                        hotspot (default: 8080)
+
+```
  
  - Python
 ```Python
