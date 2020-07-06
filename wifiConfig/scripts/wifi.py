@@ -214,3 +214,5 @@ def normalize(cell_block):
             elif key in normalize_value:
                 setattr(cell, key, normalize_value[key](value))
     return cell
+    
+

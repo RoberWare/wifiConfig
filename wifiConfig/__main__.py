@@ -1,13 +1,15 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
+header = """
+           _  __ _  ____             __ _        
+ __      _(_)/ _(_)/ ___|___  _ __  / _(_) __ _  
+ \ \ /\ / / | |_| | |   / _ \| '_ \| |_| |/ _` | 
+  \ V  V /| |  _| | |__| (_) | | | |  _| | (_| | 
+   \_/\_/ |_|_| |_|\____\___/|_| |_|_| |_|\__, | 
+                                          |___/  
 """
-*******************************
-*                             *
-*         wifiConfig          *
-*                             * 
-*******************************
-
+"""
 Description
     Flask app, for an easy wifi configuration
 
@@ -23,13 +25,11 @@ Developer
 
 #***MODULES***
 import sys,os,time,argparse
-from threading import Thread
-from multiprocessing import Process, Value
 import urllib.request as urllib2
+from multiprocessing import Process, Value
 from flask import Flask, request, redirect, url_for, g
 from PyAccessPoint import pyaccesspoint
 from wifiConfig.scripts.wifi import Finder, Cell
-
 
 #***GLOBAL VARS***
 wlan='wlan0'
@@ -38,6 +38,23 @@ app = Flask("wifi_conf",
 os.environ["PYTHONOPTIMIZE"] = "1"
 thr_connect = None
 myWifiConf = None
+
+def check_con():
+    try:
+        urllib2.urlopen("http://www.google.com",timeout=1)
+        return True
+    except:
+        return False
+
+class bcolor:
+    colors={
+        "INFO": '\033[94m',
+        "OK": '\033[92m',
+        "FAIL": '\033[91m',
+        "END": '\033[0m'
+        }
+    def text(t):
+        return bcolor.colors[t]+t+bcolor.colors["END"]
 
 class WifiConfApp():
     """
@@ -59,28 +76,36 @@ class WifiConfApp():
                        flask_app = {
                             "host":"0.0.0.0", "port":"8080"}):
         self.connected = Value('i', 0)
+        self.host=flask_app["host"]
+        self.port=flask_app["port"]
+        self.ssid=access_point["ssid"]
+        self.password=access_point["password"]
         global myWifiConf
         myWifiConf = WifiConf(access_point, flask_app, self.connected)
         
     def start(self):
+        print(header)
         main = Process(target = myWifiConf.start)
         main.start()
         while True:
+            print("["+bcolor.text("INFO")+"] Loading access point")
             myWifiConf.reset_ap()
             self.connected.value=0
+            print("["+bcolor.text("OK")+"] Running flask app on %s:%s"%(self.host, self.port))
+            print("["+bcolor.text("OK")+"] Running access point with ssid %s and password %s"%(self.ssid, self.password))
             while self.connected.value != 1:
                 #print("waiting "+str(self.connected.value)) 
                 time.sleep(5)
             #global thr_connect
             #print(thr_connect)
             #thr_connect.join()
-            print("finished")
-            print("checking network...")
-            if myWifiConf.check_con():
-                print("network checked")
+            print("["+bcolor.text("OK")+"] Finished")
+            print("["+bcolor.text("INFO")+"] Checking network...")
+            if check_con():
+                print("["+bcolor.text("OK")+"] Network checked\n\tExit.")
                 break
             else:
-                print("ERROR: network without internet conn")
+                print("["+bcolor.text("FAIL")+"] network without internet conn\n\tLaunching app again.")
         main.terminate()
         main.join()
         
@@ -113,18 +138,18 @@ class WifiConf():
                                              password=access_point["password"])
                                              
     def connect(self,req, server_name, pw):
+        print("["+bcolor.text("INFO")+"] Trying to connect to desired network")
         with app.test_request_context():
             request = req
             time.sleep(1)
             self.access_point.stop()
-            os.system("sudo pyaccesspoint stop")   
+            os.system("sudo pyaccesspoint stop")
             myFinder=Finder(server_name=server_name,
                             password=pw,
                             interface=self.wlan) 
             myFinder.connection()
             self.connected.value=1
             #print("connected!")
-        print("ok")
 
     def reset_ap(self):
         os.system("sudo pyaccesspoint stop")    
@@ -134,18 +159,12 @@ class WifiConf():
     def start(self):
         try:
             #print("running? "+str(self.access_point.is_running()))
+            print("["+bcolor.text("INFO")+"] Loading flask app")
             app.run(host=self.host, port=self.port)
         
         except Exception as e:
             print(e)
             sys.exit()
-
-    def check_con(self):
-        try:
-            urllib2.urlopen("http://www.google.com",timeout=1)
-            return True
-        except:
-            return False
 
 #***FLASK APP***
 def after_this_request(f):
@@ -221,7 +240,7 @@ def connect_page():
     server_name=request.form.get("ssid")
     pw=request.form.get("password")    
     global thr_connect
-    thr_connect = Thread(target=myWifiConf.connect, args=[request, server_name, pw])
+    thr_connect = Process(target=myWifiConf.connect, args=[request, server_name, pw])
     thr_connect.start()
     return "connecting..."
     
@@ -233,29 +252,36 @@ def shutdown():
 
 
 def main():
-    parser = argparse.ArgumentParser(description='A utility create a wifi hotspot on linux',
+    parser = argparse.ArgumentParser(description='Flask app for an easy wifi configuration, iot oriented.',
                                      formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument('command', choices=['start'])
     parser.add_argument('-w', "--wlan", required=False, default='wlan0',
                         help='wi-fi interface that will be used to create hotspot')
     parser.add_argument('-i', "--inet", required=False, default=None, help='forwarding interface')
-    parser.add_argument('-ip', required=False, default='192.168.0.1', help='ip address of this machine in new '
+    parser.add_argument('-ip', "--ip", required=False, default='192.168.0.1', help='ip address of this machine in new '
                                                                             'network')
     parser.add_argument('-n', "--netmask", required=False, default='255.255.255.0',
                         help='no idea what to put here as help, if don\'t know what is it don\'t change this parameter')
     parser.add_argument('-s', "--ssid", required=False, default='MyAccessPoint', help='name of new hotspot')
     parser.add_argument('-p', "--password", required=False, default='1234567890',
                         help='password that can be used to connect to created hotspot')
-
+    parser.add_argument('-c', "--check", required=False, default='True',
+                        help='If True, it checks the internet con before launch the app. If you have connection the app will not be launched')
     parser.add_argument('-ho', "--host", required=False, default='0.0.0.0', help='name of new hotspot')
     parser.add_argument('-po', "--port", required=False, default='8080',
                         help='password that can be used to connect to created hotspot')
 
-    args = parser.parse_args()
+    argu = parser.parse_args()
     
-    if args.command == 'start':
-        myWifiConfApp = WifiConfApp()
-        myWifiConfApp.start()
+    if argu.command == 'start':
+        args = vars(argu)
+
+        access_point = {"wlan":args["wlan"],"inet":args["inet"], "ip":args["ip"], "netmask":args["netmask"], "ssid":args["ssid"], "password":args["password"]}
+        flask_app    = {"host":args["host"], "port":args["port"]}
+        myWifiConfApp = WifiConfApp(access_point, flask_app)
+        
+        if (args["check"] == "True" and not check_con()) or args["check"] == "False":
+            myWifiConfApp.start()
 
 if __name__ == "__main__":
     sys.exit(main())
