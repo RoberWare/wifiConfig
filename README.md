@@ -49,8 +49,7 @@ optional arguments:
   -ip IP                ip address of this machine in new network (default:
                         192.168.0.1)
   -n NETMASK, --netmask NETMASK
-                        no idea what to put here as help, if don't know what
-                        is it don't change this parameter (default:
+                        (default:
                         255.255.255.0)
   -s SSID, --ssid SSID  name of new hotspot (default: MyAccessPoint)
   -p PASSWORD, --password PASSWORD
